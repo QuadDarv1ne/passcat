@@ -22,6 +22,13 @@ $ passcat 5
 relight usage geologic tumbling disown
 ```
 
+или
+
+```
+$ passcat --count 5
+relight usage geologic tumbling disown
+```
+
 Показать доступные словари:
 
 ```
@@ -46,6 +53,46 @@ latitar reglamentaria apanuscadora consultable carbunclo duplicar paragueria cin
 Указать путь к альтернативному словарю:
 
 ``$ passcat -f /path/to/wordlist/file.txt``
+
+Указать разделитель между словами (по умолчанию пробел):
+
+```
+$ passcat 3 --separator '-'
+correct-horse-battery
+```
+
+Генерировать несколько фраз за раз:
+
+```
+$ passcat 2 -n 3
+word1 word2
+word3 word4
+word5 word6
+```
+
+Капитализировать первую букву каждого слова:
+
+```
+$ passcat 2 -C
+Apple Banana
+Cherry Date
+```
+
+Перевести все буквы в верхний регистр:
+
+```
+$ passcat 2 -U
+APPLE BANANA
+CHERRY DATE
+```
+
+Комбинировать опции:
+
+```
+$ passcat 2 -n 2 -C --separator '.'
+Apple.Banana
+Cherry.Date
+```
 
 ## Лицензия
 

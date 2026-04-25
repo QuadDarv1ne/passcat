@@ -22,6 +22,13 @@ $ passcat 5
 relight usage geologic tumbling disown
 ```
 
+or
+
+```
+$ passcat --count 5
+relight usage geologic tumbling disown
+```
+
 Show available wordlists:
 
 ```
@@ -46,6 +53,46 @@ latitar reglamentaria apanuscadora consultable carbunclo duplicar paragueria cin
 Specify the path to an alternate wordlist:
 
 ``$ passcat -f /path/to/wordlist/file.txt``
+
+Specify the separator between words (default is space):
+
+```
+$ passcat 3 --separator '-'
+correct-horse-battery
+```
+
+Generate multiple passphrases at once:
+
+```
+$ passcat 2 -n 3
+word1 word2
+word3 word4
+word5 word6
+```
+
+Capitalize the first letter of each word:
+
+```
+$ passcat 2 -C
+Apple Banana
+Cherry Date
+```
+
+Convert all letters to uppercase:
+
+```
+$ passcat 2 -U
+APPLE BANANA
+CHERRY DATE
+```
+
+Combine options:
+
+```
+$ passcat 2 -n 2 -C --separator '.'
+Apple.Banana
+Cherry.Date
+```
 
 ## License
 
