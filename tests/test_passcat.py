@@ -46,6 +46,21 @@ def test_generate_with_empty_separator():
     # The result should be a concatenation of two words from the list (with replacement allowed)
     assert result in [w1 + w2 for w1 in words for w2 in words]
 
+def test_generate_with_transform():
+    words = ['apple', 'banana', 'cherry']
+    # Test capitalize transform
+    result = generate(words, 3, transform=str.capitalize)
+    parts = result.split()
+    assert len(parts) == 3
+    for part in parts:
+        assert part == part.capitalize()
+    # Test uppercase transform
+    result = generate(words, 3, transform=str.upper)
+    parts = result.split()
+    assert len(parts) == 3
+    for part in parts:
+        assert part == part.upper()
+
 def test_positional_count():
     # Test that the positional argument for count works
     result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '3'],
@@ -116,6 +131,52 @@ def test_num_passphrases_invalid():
                             capture_output=True, text=True)
     assert result.returncode != 0
     assert "Invalid num" in result.stderr or "Invalid num" in result.stdout
+
+def test_capitalize_option():
+    # Test that -C option runs without error and produces two words
+    result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '2', '-C'],
+                            capture_output=True, text=True)
+    assert result.returncode == 0
+    line = result.stdout.strip()
+    words = line.split()
+    assert len(words) == 2
+    # Each word should be non-empty
+    for word in words:
+        assert len(word) > 0
+
+def test_uppercase_option():
+    # Test that -U option converts all letters to uppercase
+    result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '2', '-U'],
+                            capture_output=True, text=True)
+    assert result.returncode == 0
+    line = result.stdout.strip()
+    words = line.split()
+    assert len(words) == 2
+    for word in words:
+        assert word == word.upper()
+
+def test_capitalize_with_separator():
+    # Test that -C works with custom separator
+    result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '2', '-C', '--separator', '-'],
+                            capture_output=True, text=True)
+    assert result.returncode == 0
+    line = result.stdout.strip()
+    assert '-' in line
+    parts = line.split('-')
+    assert len(parts) == 2
+    for part in parts:
+        assert len(part) > 0
+
+def test_uppercase_with_count():
+    # Test that -U works with --count option
+    result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '--count', '2', '-U'],
+                            capture_output=True, text=True)
+    assert result.returncode == 0
+    line = result.stdout.strip()
+    words = line.split()
+    assert len(words) == 2
+    for word in words:
+        assert word == word.upper()
 
 if __name__ == '__main__':
     pytest.main([__file__])

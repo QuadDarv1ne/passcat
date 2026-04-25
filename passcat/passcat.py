@@ -5,7 +5,7 @@ Passcat lets you generate cryptographically secure, memorable passphrases.
 
 Usage:
     passcat [COUNT] [--file=f] [--help] [--list] [--version] [--wordlist=w]
-            [--separator=s] [--count=c] [-n NUM]
+            [--separator=s] [--count=c] [-n NUM] [-C] [-U]
 
 Options:
     -f --file=f               Specify the path to an alternate wordlist.
@@ -16,6 +16,8 @@ Options:
     -s --separator=s  Specify the separator between words. [default: ' ']
     -c --count=c          Specify the number of words.
     -n --num-passphrases=NUM  Specify the number of passphrases to generate.
+    -C --capitalize         Capitalize the first letter of each word.
+    -U --uppercase          Convert all letters to uppercase.
 """
 
 import os
@@ -37,11 +39,14 @@ def wordlists():
             if a.endswith('.txt')]
 
 
-def generate(words, count, separator=' '):
+def generate(words, count, separator=' ', transform=None):
     """
     Generate passphrase.
     """
-    return separator.join(choice(words) for i in range(count))
+    chosen = [choice(words) for i in range(count)]
+    if transform:
+        chosen = [transform(w) for w in chosen]
+    return separator.join(chosen)
 
 
 def main():
@@ -90,8 +95,15 @@ def main():
     if separator is None:
         separator = ' '
 
+    # Determine text transformation
+    transform = None
+    if args['--uppercase']:
+        transform = str.upper
+    elif args['--capitalize']:
+        transform = str.capitalize
+
     for _ in range(num_passphrases):
-        passphrase = generate(words, count, separator)
+        passphrase = generate(words, count, separator, transform)
         print(passphrase)
 
 
