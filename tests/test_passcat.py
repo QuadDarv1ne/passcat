@@ -226,5 +226,41 @@ def test_unique_uppercase():
     for word in words:
         assert word == word.upper()
 
+def test_show_wordlist_default():
+    # Test that --show-wordlist works with default wordlist (eff)
+    result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '--show-wordlist'],
+                            capture_output=True, text=True)
+    assert result.returncode == 0
+    output = result.stdout.strip()
+    assert "Selected wordlist:" in output
+    assert "Number of words:" in output
+    assert "First 5 words:" in output
+    assert "Last 5 words:" in output
+
+def test_show_wordlist_specific():
+    # Test that --show-wordlist works with a specific wordlist via -w
+    result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '--show-wordlist', '-w', 'english'],
+                            capture_output=True, text=True)
+    assert result.returncode == 0
+    output = result.stdout.strip()
+    assert "Selected wordlist:" in output
+    assert "english.txt" in output.lower()  # The path should contain english.txt
+    assert "Number of words:" in output
+    assert "First 5 words:" in output
+    assert "Last 5 words:" in output
+
+def test_show_wordlist_file():
+    # Test that --show-wordlist works with a custom file via -f
+    # We'll use one of the existing wordlists for simplicity
+    result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '--show-wordlist', '-f', 'passcat/wordlists/spanish.txt'],
+                            capture_output=True, text=True)
+    assert result.returncode == 0
+    output = result.stdout.strip()
+    assert "Selected wordlist:" in output
+    assert "spanish.txt" in output
+    assert "Number of words:" in output
+    assert "First 5 words:" in output
+    assert "Last 5 words:" in output
+
 if __name__ == '__main__':
     pytest.main([__file__])

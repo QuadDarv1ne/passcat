@@ -6,7 +6,7 @@ Passcat lets you generate cryptographically secure, memorable passphrases.
 Usage:
     passcat [COUNT] [--file=f] [--help] [--list] [--version] [--wordlist=w]
             [--separator=s] [--count=c] [-n NUM] [-C] [-U] [--no-separator]
-            [--unique]
+            [--unique] [--show-wordlist]
 
 Options:
     -f --file=f               Specify the path to an alternate wordlist.
@@ -21,6 +21,7 @@ Options:
     -U --uppercase          Convert all letters to uppercase.
         --no-separator      Do not use a separator between words.
         --unique            Ensure no repeated words in the passphrase.
+    --show-wordlist         Show information about the selected wordlist and exit.
 """
 
 import os
@@ -77,6 +78,23 @@ def main():
     if args['--list']:
         print('\n'.join(sorted(wordlists())))
         sys.exit(0)
+
+    if args['--show-wordlist']:
+        path = args['--file']
+        if path is None:
+            path = '%s/wordlists/%s.txt' % (_dir, args['--wordlist'].lower())
+        try:
+            with open(path) as f:
+                words = f.read().splitlines()
+            print(f"Selected wordlist: {path}")
+            print(f"Number of words: {len(words)}")
+            print(f"First 5 words: {', '.join(words[:5])}")
+            print(f"Last 5 words: {', '.join(words[-5:])}")
+            sys.exit(0)
+        except FileNotFoundError:
+            print("File not found. Please input the path of an existing "
+                  "file or use the '-l' flag to show available wordlists.")
+            sys.exit(1)
 
     path = args['--file']
     if path is None:
