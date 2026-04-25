@@ -86,10 +86,24 @@ APPLE BANANA
 CHERRY DATE
 ```
 
+Не использовать разделитель между словами:
+
+```
+$ passcat 2 --no-separator
+word1word2
+```
+
+Убедиться, что в пароле-фразе нет повторяющихся слов:
+
+```
+$ passcat 3 --unique
+word1 word2 word3
+```
+
 Комбинировать опции:
 
 ```
-$ passcat 2 -n 2 -C --separator '.'
+$ passcat 2 -n 2 -C --separator '.' --unique
 Apple.Banana
 Cherry.Date
 ```

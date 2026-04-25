@@ -5,7 +5,8 @@ Passcat lets you generate cryptographically secure, memorable passphrases.
 
 Usage:
     passcat [COUNT] [--file=f] [--help] [--list] [--version] [--wordlist=w]
-            [--separator=s] [--count=c] [-n NUM] [-C] [-U]
+            [--separator=s] [--count=c] [-n NUM] [-C] [-U] [--no-separator]
+            [--unique]
 
 Options:
     -f --file=f               Specify the path to an alternate wordlist.
@@ -18,6 +19,8 @@ Options:
     -n --num-passphrases=NUM  Specify the number of passphrases to generate.
     -C --capitalize         Capitalize the first letter of each word.
     -U --uppercase          Convert all letters to uppercase.
+        --no-separator      Do not use a separator between words.
+        --unique            Ensure no repeated words in the passphrase.
 """
 
 import os
@@ -44,6 +47,25 @@ def generate(words, count, separator=' ', transform=None):
     Generate passphrase.
     """
     chosen = [choice(words) for i in range(count)]
+    if transform:
+        chosen = [transform(w) for w in chosen]
+    return separator.join(chosen)
+
+
+def generate_unique(words, count, separator=' ', transform=None):
+    """
+    Generate passphrase with unique words.
+    """
+    if count > len(words):
+        print("Cannot generate unique-word passphrase: count > wordlist size.")
+        sys.exit(1)
+    chosen = []
+    seen = set()
+    while len(chosen) < count:
+        w = choice(words)
+        if w not in seen:
+            seen.add(w)
+            chosen.append(w)
     if transform:
         chosen = [transform(w) for w in chosen]
     return separator.join(chosen)
@@ -91,9 +113,13 @@ def main():
             sys.exit(1)
         num_passphrases = int(num_passphrases_arg)
 
-    separator = args['--separator']
-    if separator is None:
-        separator = ' '
+    # Determine separator
+    if args['--no-separator']:
+        separator = ''
+    else:
+        separator = args['--separator']
+        if separator is None:
+            separator = ' '
 
     # Determine text transformation
     transform = None
@@ -103,7 +129,10 @@ def main():
         transform = str.capitalize
 
     for _ in range(num_passphrases):
-        passphrase = generate(words, count, separator, transform)
+        if args['--unique']:
+            passphrase = generate_unique(words, count, separator, transform)
+        else:
+            passphrase = generate(words, count, separator, transform)
         print(passphrase)
 
 

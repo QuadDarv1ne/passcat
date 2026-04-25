@@ -86,10 +86,24 @@ APPLE BANANA
 CHERRY DATE
 ```
 
+Do not use a separator between words:
+
+```
+$ passcat 2 --no-separator
+word1word2
+```
+
+Ensure no repeated words in the passphrase:
+
+```
+$ passcat 3 --unique
+word1 word2 word3
+```
+
 Combine options:
 
 ```
-$ passcat 2 -n 2 -C --separator '.'
+$ passcat 2 -n 2 -C --separator '.' --unique
 Apple.Banana
 Cherry.Date
 ```

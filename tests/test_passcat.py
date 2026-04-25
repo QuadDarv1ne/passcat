@@ -1,7 +1,7 @@
 import pytest
 import subprocess
 import sys
-from passcat.passcat import generate, wordlists
+from passcat.passcat import generate, generate_unique, wordlists
 import os
 
 def test_wordlists_not_empty():
@@ -175,6 +175,54 @@ def test_uppercase_with_count():
     line = result.stdout.strip()
     words = line.split()
     assert len(words) == 2
+    for word in words:
+        assert word == word.upper()
+
+def test_no_separator():
+    # Test that --no-separator produces output without spaces
+    result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '2', '--no-separator'],
+                            capture_output=True, text=True)
+    assert result.returncode == 0
+    line = result.stdout.strip()
+    # Should be two words concatenated without space
+    assert len(line) > 0
+    assert ' ' not in line
+
+def test_unique():
+    # Test that --unique prevents repeated words in a passphrase
+    # Use a small wordlist for testing by creating a temporary one? 
+    # Instead, we can test with the default wordlist and just check that the two words are different.
+    # Note: There is a small chance they are the same, but with a large wordlist it's negligible.
+    # For deterministic testing, we would need to mock choice, but for simplicity we'll just run and check.
+    result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '2', '--unique'],
+                            capture_output=True, text=True)
+    assert result.returncode == 0
+    line = result.stdout.strip()
+    words = line.split()
+    assert len(words) == 2
+    # The two words should be different
+    assert words[0] != words[1]
+
+def test_unique_with_separator():
+    # Test that --unique works with custom separator
+    result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '2', '--unique', '--separator', '-'],
+                            capture_output=True, text=True)
+    assert result.returncode == 0
+    line = result.stdout.strip()
+    assert '-' in line
+    parts = line.split('-')
+    assert len(parts) == 2
+    assert parts[0] != parts[1]
+
+def test_unique_uppercase():
+    # Test that --unique works with --uppercase
+    result = subprocess.run([sys.executable, '-m', 'passcat.passcat', '2', '--unique', '-U'],
+                            capture_output=True, text=True)
+    assert result.returncode == 0
+    line = result.stdout.strip()
+    words = line.split()
+    assert len(words) == 2
+    assert words[0] != words[1]
     for word in words:
         assert word == word.upper()
 
